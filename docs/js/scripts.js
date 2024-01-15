@@ -312,12 +312,32 @@ function updateMapPosition(moveDirection) {
 	}
 }
 
+const replaceRegex = /(\w*-)\w*((?:-small)?.jpg)/g;
 $(document).on("change", "#goalList select", function(ev){
-	target = ev.target
-	parent = $(target).parent()[0]
-	animal = parent.id
-	console.log(`animal: ${animal}`)
-	//TODO: change images
+	let target = ev.target;
+	parent = $(target).parent()[0];
+	let animal = parent.id;
+	let value = target.value;
+	console.log(`animal: ${animal}`);
+	console.log(`value: ${value}`);
+	// change images
+	replacement = [
+		$(`#goalList #${animal} img`)[0], // small
+		// large
+		$(`#quickViewTabletGoalLayerList .${animal} .goalLayerScoring`)[0],
+		$(`#quickViewMobileGoalFullImages #quickViewGoalImg-${animal}`)[0],
+		$(`#${animal}ScoringModal .goalScoringModalImg`)[0],
+	]
+	console.log(replacement)
+	replacement.forEach((el) => {
+		if (el == null) {
+			console.error("Element for source replacement doesnt exist");
+			return;
+		}
+		el.src = el.src.replace(replaceRegex, `$1${value}$2`);
+	});
+	//TODO: save value and add it to in code insertions
+	//TODO: check saved value in score calc
 })
 
 $(document).on(touchEvent,'#showWildlifeGoals',function(){
