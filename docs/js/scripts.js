@@ -312,6 +312,14 @@ function updateMapPosition(moveDirection) {
 	}
 }
 
+$(document).on("change", "#goalList select", function(ev){
+	target = ev.target
+	parent = $(target).parent()[0]
+	animal = parent.id
+	console.log(`animal: ${animal}`)
+	//TODO: change images
+})
+
 $(document).on(touchEvent,'#showWildlifeGoals',function(){
 
 	if(currentView == 'mobile') {
