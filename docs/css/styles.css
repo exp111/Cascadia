@@ -5336,3 +5336,11 @@ top: 290px;
 	}
 
 }
+
+.label-for-select {
+	line-height: 2.5em;
+}
+.label-for-select:not(:last-child) {
+	margin-bottom: 0;
+	margin-right: 0.5em;
+}
