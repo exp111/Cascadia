@@ -312,14 +312,19 @@ function updateMapPosition(moveDirection) {
 	}
 }
 
+$(document).on("change", "#overall-setSelect", function(ev) {
+	let val = ev.target.value;
+	console.debug(`Changing all sets to ${val}`);
+	$("#goalList select").val(val).change();
+});
+
 const replaceRegex = /(\w*-)\w*((?:-small)?.jpg)/g;
 $(document).on("change", "#goalList select", function(ev){
 	let target = ev.target;
-	parent = $(target).parent()[0];
+	let parent = $(target).parent().parent()[0];
 	let animal = parent.id;
 	let value = target.value;
-	console.log(`animal: ${animal}`);
-	console.log(`value: ${value}`);
+	console.debug(`animal: ${animal}, value: ${value}`);
 	// change images
 	replacement = [
 		$(`#goalList #${animal} img`)[0], // small
@@ -328,7 +333,7 @@ $(document).on("change", "#goalList select", function(ev){
 		$(`#quickViewMobileGoalFullImages #quickViewGoalImg-${animal}`)[0],
 		$(`#${animal}ScoringModal .goalScoringModalImg`)[0],
 	]
-	console.log(replacement)
+	//console.debug(replacement)
 	replacement.forEach((el) => {
 		if (el == null) {
 			console.error("Element for source replacement doesnt exist");
