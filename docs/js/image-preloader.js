@@ -4,6 +4,7 @@ function preload(arrayOfImages) {
     });
 }
 
+// Dont preload mobile/desktop images while on the other platform?
 preload([
     'img/scoring/bearScore.jpg',
     'img/scoring/elkScore.jpg',
@@ -11,8 +12,16 @@ preload([
     'img/scoring/hawkScore.jpg',
     'img/scoring/salmonScore.jpg',
     'img/scoring/full-scoring-table.jpg',    
-    'img/scoring-goals/bear-small.jpg',
-    'img/scoring-goals/bear-large.jpg',
+    'img/scoring-goals/bear-a.jpg',
+    'img/scoring-goals/bear-b.jpg',
+    'img/scoring-goals/bear-c.jpg',
+    'img/scoring-goals/bear-d.jpg',
+    'img/scoring-goals/bear-star.jpg',
+    'img/scoring-goals/bear-a-small.jpg',
+    'img/scoring-goals/bear-b-small.jpg',
+    'img/scoring-goals/bear-c-small.jpg',
+    'img/scoring-goals/bear-d-small.jpg',
+    'img/scoring-goals/bear-star-small.jpg',
     'img/scoring-goals/bear-mobile-end-scoring.jpg',    
     'img/scoring-goals/bear-thumbnail-desktop.jpg',    
     'img/scoring-goals/bear-thumbnail-tablet-mobile.jpg',
