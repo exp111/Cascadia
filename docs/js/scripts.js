@@ -352,6 +352,8 @@ $(document).on("change", "#goalList select", function(ev){
 	});
 	//TODO: check saved value in score calc
 	//TODO: add thumbnails
+	//TODO: make the coverup layer eat less real estate
+	//TODO: fix overall set select on mobile being oob
 })
 
 $(document).on(touchEvent,'#showWildlifeGoals',function(){
@@ -3697,7 +3699,7 @@ function calculateBearTokenScoring() {
 					}
 				}
 				if(potentialTokenIDs.length == 2) {
-					if(confirmedBearPairs <= 4) confirmedBearPairs++;
+					if(confirmedBearPairs < 4) confirmedBearPairs++;
 				}
 			}
 			usedTokenIDs.push(...potentialTokenIDs);
