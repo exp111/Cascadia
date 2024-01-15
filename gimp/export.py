@@ -1,5 +1,8 @@
 import math, os
-image = gimp.image_list()[0]
+out = "out"
+image = pdb.gimp_image_duplicate(gimp.image_list()[0])
+if not os.path.isdir(out):
+    os.mkdir(out)
 # set everything as disabled
 for layer in image.layers:
     if pdb.gimp_item_get_color_tag(layer) == 8: # bg, always on
@@ -24,9 +27,10 @@ for group in image.layers:
                 continue
             l.visible = False
         # export
-        base = group.name.lower() + "/" + group.name.lower() + "-" + layer.name.lower()
-        if not os.path.isdir(group.name.lower()):
-            os.mkdir(group.name.lower())
+        dir = out + "/" + group.name.lower()
+        base = dir + "/" + layer.name.lower()
+        if not os.path.isdir(dir):
+            os.mkdir(dir)
         # duplicate and merge
         dupe = pdb.gimp_image_duplicate(image)
         content = pdb.gimp_image_merge_visible_layers(dupe, CLIP_TO_IMAGE)
