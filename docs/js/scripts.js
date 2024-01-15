@@ -122,6 +122,14 @@ var rotateTileAllowed = false;
 
 var currentView = 'desktop';
 
+var currentSets = {
+	"bear": "a",
+	"elk": "a",
+	"fox": "a",
+	"hawk": "a",
+	"salmon": "a",
+}
+
 var rulesURL = window.location.href.split("/").slice(0,-1).join("/") + "/rules.pdf"
 
 $(window).resize(function() {
@@ -325,6 +333,7 @@ $(document).on("change", "#goalList select", function(ev){
 	let animal = parent.id;
 	let value = target.value;
 	console.debug(`animal: ${animal}, value: ${value}`);
+	currentSets[animal] = value;
 	// change images
 	replacement = [
 		$(`#goalList #${animal} img`)[0], // small
@@ -341,8 +350,8 @@ $(document).on("change", "#goalList select", function(ev){
 		}
 		el.src = el.src.replace(replaceRegex, `$1${value}$2`);
 	});
-	//TODO: save value and add it to in code insertions
 	//TODO: check saved value in score calc
+	//TODO: add thumbnails
 })
 
 $(document).on(touchEvent,'#showWildlifeGoals',function(){
@@ -2984,7 +2993,7 @@ function endOfGameSetup() {
 			</div>
 
 			<div id="bear-finalScoringContainer" class="largeWildlifeFinalScoringInfo finalScoringItem inactiveScoringItem">
-				<img src="img/scoring-goals/bear-large.jpg" alt="" />
+				<img src="img/scoring-goals/bear/bear-${currentSets["bear"]}.jpg" alt="" />
 				
 				<div class="individualWildlifeScoringInputContainer">								
 					<img class="individualWildlifeScore-background" src="img/scoring/bearScore.jpg" alt="" />
@@ -2995,7 +3004,7 @@ function endOfGameSetup() {
 			</div>
 
 			<div id="elk-finalScoringContainer" class="largeWildlifeFinalScoringInfo finalScoringItem inactiveScoringItem">
-				<img src="img/scoring-goals/elk-large.jpg" alt="" />
+				<img src="img/scoring-goals/elk/elk-${currentSets["elk"]}.jpg" alt="" />
 
 				<div class="individualWildlifeScoringInputContainer">								
 					<img class="individualWildlifeScore-background" src="img/scoring/elkScore.jpg" alt="" />
@@ -3006,7 +3015,7 @@ function endOfGameSetup() {
 			</div>
 
 			<div id="fox-finalScoringContainer" class="largeWildlifeFinalScoringInfo finalScoringItem inactiveScoringItem">
-				<img src="img/scoring-goals/fox-large.jpg" alt="" />
+				<img src="img/scoring-goals/fox/fox-${currentSets["fox"]}.jpg" alt="" />
 				
 				<div class="individualWildlifeScoringInputContainer">								
 					<img class="individualWildlifeScore-background" src="img/scoring/foxScore.jpg" alt="" />
@@ -3017,7 +3026,7 @@ function endOfGameSetup() {
 			</div>
 
 			<div id="hawk-finalScoringContainer" class="largeWildlifeFinalScoringInfo finalScoringItem inactiveScoringItem">
-				<img src="img/scoring-goals/hawk-large.jpg" alt="" />
+				<img src="img/scoring-goals/hawk/hawk-${currentSets["hawk"]}.jpg" alt="" />
 				
 				<div class="individualWildlifeScoringInputContainer">								
 					<img class="individualWildlifeScore-background" src="img/scoring/hawkScore.jpg" alt="" />
@@ -3028,7 +3037,7 @@ function endOfGameSetup() {
 			</div>
 
 			<div id="salmon-finalScoringContainer" class="largeWildlifeFinalScoringInfo finalScoringItem inactiveScoringItem">
-				<img src="img/scoring-goals/salmon-large.jpg" alt="" />
+				<img src="img/scoring-goals/salmon/salmon-${currentSets["salmon"]}.jpg" alt="" />
 				
 				<div class="individualWildlifeScoringInputContainer">								
 					<img class="individualWildlifeScore-background" src="img/scoring/salmonScore.jpg" alt="" />
