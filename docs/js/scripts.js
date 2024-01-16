@@ -3650,66 +3650,106 @@ let tokenScoring = {
 };
 
 function calculateBearTokenScoring() {
-
-    let bearScoringValues = {
-        '1': 4,
-        '2': 11,
-        '3': 19,
-        '4': 27
-    }
-
-    let confirmedBearPairs = 0;
-
-    let potentialTokenIDs = [];
-    let usedTokenIDs = [];
-
-    const tokenIDs = Object.keys(allPlacedTokens);
-
-    for (const tokenID of tokenIDs) {
-
-        potentialTokenIDs = [];
-
-        if (allPlacedTokens[tokenID] == 'bear' && usedTokenIDs.indexOf(tokenID) == -1) {
-
-            let neighbourTiles = neighbourTileIDs(tokenID);
-
-            for (let i = 0; i < neighbourTiles.length; i++) {
-                if (allPlacedTokens.hasOwnProperty(neighbourTiles[i])) {
-                    // The neighbouring tile exists and has a placed token on it!
-                    // Continue with the specified scoring process for this wildlife'
-                    if (allPlacedTokens[neighbourTiles[i]] == 'bear') {
-                        potentialTokenIDs.push(neighbourTiles[i]);
+    let score = 0;
+    switch (currentSets["bear"]) {
+        // A: up to 4 bear pairs
+        case "a": {
+            let scoringValues = {
+                1: 4,
+                2: 11,
+                3: 19,
+                4: 27
+            }
+            let pairs = 0;
+            let groups = getAnimalGroups("bear");
+            groups.forEach((group) => {
+                if (group.length == 2) {
+                    if (pairs < 4) {
+                        pairs++;
                     }
                 }
-            }
-
-            if (potentialTokenIDs.length == 1) {
-                // Only one beighbouring bear means it only has the pair and could qualify for scoring!
-                // Need to now make sure there's no bears touching the matched neighbour tile before locking it in for scoring
-
-                let potentialBearPairNeighbourTiles = neighbourTileIDs(potentialTokenIDs[0]);
-                for (let i = 0; i < potentialBearPairNeighbourTiles.length; i++) {
-                    if (allPlacedTokens.hasOwnProperty(potentialBearPairNeighbourTiles[i])) {
-                        // The neighbouring tile exists and has a placed token on it!
-                        // Continue with the specified scoring process for this wildlife'
-
-                        if (allPlacedTokens[potentialBearPairNeighbourTiles[i]] == 'bear') {
-                            potentialTokenIDs.push(potentialBearPairNeighbourTiles[i]);
-                        }
-                    }
+            });
+            if (scoringValues[pairs])
+                score = scoringValues[pairs];
+            break;
+        }
+        // B: 10 points per 3 bear group
+        case "b": {
+            let groups = getAnimalGroups("bear");
+            groups.forEach((group) => {
+                if (group.length == 3) {
+                    score += 10;
                 }
-                if (potentialTokenIDs.length == 2) {
-                    if (confirmedBearPairs < 4) confirmedBearPairs++;
-                }
+            });
+            break;
+        }
+        // C: points per 1,2,3 bear group; 3 bonus points if all group sizes exist
+        case "c": {
+            let scoringValues = {
+                1: 2,
+                2: 5,
+                3: 8,
             }
-            usedTokenIDs.push(...potentialTokenIDs);
+            let hasGroup = {
+                1: false,
+                2: false,
+                3: false,
+            };
+            let groups = getAnimalGroups("bear");
+            groups.forEach((group) => {
+                let size = group.length;
+                if (scoringValues[size]) {
+                    hasGroup[size] = true;
+                    score += scoringValues[size];
+                }
+            });
+            if (hasGroup[1] && hasGroup[2] && hasGroup[3])
+                score += 3;
+            break;
+        }
+        // D: points per 2,3,4 bear group
+        case "d": {
+            let scoringValues = {
+                2: 5,
+                3: 8,
+                4: 13,
+            }
+            let groups = getAnimalGroups("bear");
+            groups.forEach((group) => {
+                let size = group.length;
+                if (scoringValues[size]) {
+                    score += scoringValues[size];
+                }
+            });
+            break;
+        }
+        // Star: points per either 1,2,3,4 bear group; we choose
+        case "star": {
+            let scoringValues = {
+                1: 2,
+                2: 5,
+                3: 9,
+                4: 13,
+            }
+            let scores = {
+                1: 0,
+                2: 0,
+                3: 0,
+                4: 0
+            }
+            let groups = getAnimalGroups("bear");
+            groups.forEach((group) => {
+                let size = group.length;
+                if (scoringValues[size]) {
+                    scores[size] += scoringValues[size];
+                }
+            });
+            // add the groupscore with the highest score to the total
+            score = Math.max.apply(null, Object.values(scores));
+            break;
         }
     }
-
-    if (confirmedBearPairs != 0) {
-        tokenScoring.bear.totalScore = bearScoringValues[confirmedBearPairs];
-    }
-
+    tokenScoring.bear.totalScore = score;
 }
 
 let allElkTokens = [];
