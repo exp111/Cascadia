@@ -3745,7 +3745,7 @@ function calculateBearTokenScoring() {
                 }
             });
             // add the groupscore with the highest score to the total
-            score = Math.max.apply(null, Object.values(scores));
+            score = Math.max(...Object.values(scores));
             break;
         }
     }
