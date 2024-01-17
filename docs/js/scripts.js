@@ -4201,7 +4201,7 @@ function calculateFoxTokenScoring() {
             break;
         }
         // C: give 1 point per animal, only score the animal with the highest count (no foxes)
-        case "b": {
+        case "c": {
             for (let fox of animalTileIDs) {
                 // get all neighbour tiles
                 let neighbours = neighbourTileIDs(fox);
