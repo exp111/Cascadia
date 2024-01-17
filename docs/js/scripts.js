@@ -3748,6 +3748,9 @@ function calculateBearTokenScoring() {
             score = Math.max(...Object.values(scores));
             break;
         }
+        default:
+            console.error(`Unknown Set ${currentSets["bear"]}`);
+            return;
     }
     tokenScoring.bear.totalScore = score;
 }
@@ -4121,45 +4124,112 @@ function getOppositeDirection(thisDirection) {
     return obj.oppositeDirection;
 }
 
+function clamp(number, min, max) {
+    return Math.max(min, Math.min(number, max));
+}
+
 function calculateFoxTokenScoring() {
-    let foxScoringValues = {
-        '1': 1,
-        '2': 2,
-        '3': 3,
-        '4': 4,
-        '5': 5
-    }
-
     const tokenIDs = Object.keys(allPlacedTokens);
-
+    let animalTileIDs = [];
+    // get all foxes
     for (const tokenID of tokenIDs) {
-
-        if (allPlacedTokens[tokenID] == 'fox') {
-
-            let neighbourTiles = neighbourTileIDs(tokenID);
-
-            let allNeighbouringWildlife = [];
-
-            for (let i = 0; i < neighbourTiles.length; i++) {
-
-                if (allPlacedTokens.hasOwnProperty(neighbourTiles[i])) {
-                    allNeighbouringWildlife.push(allPlacedTokens[neighbourTiles[i]]);
-                }
-            }
-
-            if (allNeighbouringWildlife.length != 0) {
-                for (let j = 0; j < allNeighbouringWildlife.length; j++) {
-                }
-
-                let uniqueWildlife = allNeighbouringWildlife.filter(onlyUnique);
-
-                let numUniqueWildlife = uniqueWildlife.length;
-
-                tokenScoring.fox.totalScore += foxScoringValues[numUniqueWildlife];
-            }
-
+        if (allPlacedTokens[tokenID] == "fox") {
+            animalTileIDs.push(tokenID);
         }
     }
+
+    // calculate the score
+    let score = 0;
+    switch (currentSets["fox"]) {
+        //A: give 1 point for each unique animal next to a fox
+        case "a": {
+            for (let fox of animalTileIDs) {
+                // get all neighbour tiles
+                let neighbours = neighbourTileIDs(fox);
+                let unique = {};
+                let count = 0;
+                for (let tile of neighbours) {
+                    // if a animal is placed there
+                    if (allPlacedTokens.hasOwnProperty(tile)) {
+                        let type = allPlacedTokens[tile];
+                        // if it was added before it doesnt give points
+                        if (unique[type])
+                            continue;
+                        // add it
+                        count++;
+                        unique[type] = true;
+                    }
+                }
+                score += clamp(count, 0, 5);
+            }
+            break;
+        }
+        // B: 3,5,7 points for 1,2,3 unique animal pairs next to each fox (pairs dont need to be adjacent, no foxes)
+        case "b": {
+            for (let fox of animalTileIDs) {
+                // get all neighbour tiles
+                let neighbours = neighbourTileIDs(fox);
+                let animalCount = {};
+                let count = 0;
+                for (let tile of neighbours) {
+                    // if a animal is placed there
+                    if (allPlacedTokens.hasOwnProperty(tile)) {
+                        let type = allPlacedTokens[tile];
+                        if (type == "fox")
+                            continue;
+                        // add to the count
+                        if (animalCount[type]) {
+                            animalCount[type]++;
+                            // if it reaches 2 we have a pair. add to the count if we havent reached 3 (which shouldnt be possible)
+                            if (animalCount[type] == 2 && count < 3) {
+                                count++;
+                            }
+                        } else {
+                            animalCount[type] = 1;
+                        }
+                    }
+                }
+                // add to score based on scoring table
+                let scoring = {
+                    0: 0,
+                    1: 3,
+                    2: 5,
+                    3: 7
+                };
+                score += scoring[count];
+            }
+            break;
+        }
+        // C: give 1 point per animal, only score the animal with the highest count (no foxes)
+        case "b": {
+            for (let fox of animalTileIDs) {
+                // get all neighbour tiles
+                let neighbours = neighbourTileIDs(fox);
+                let animalCount = {};
+                for (let tile of neighbours) {
+                    // if a animal is placed there
+                    if (allPlacedTokens.hasOwnProperty(tile)) {
+                        let type = allPlacedTokens[tile];
+                        if (type == "fox")
+                            continue;
+                        // add to the count
+                        if (animalCount[type]) {
+                            animalCount[type]++;
+                        } else {
+                            animalCount[type] = 1;
+                        }
+                    }
+                }
+                // add to score the number of animals with the highest count
+                score += Math.max(...Object.values(animalCount));
+            }
+            break;
+        }
+        default:
+            console.error(`Unknown Set ${currentSets["fox"]}`);
+            return;
+    }
+    tokenScoring.fox.totalScore = score;
 }
 
 function calculateHawkTokenScoring() {
