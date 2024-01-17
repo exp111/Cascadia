@@ -4225,9 +4225,56 @@ function calculateFoxTokenScoring() {
             }
             break;
         }
-        // D: TODO
+        // D: give points for the amount of animal pair next to each fox pair (pairs dont need to be adjacent, no foxes, each fox only counts for one pair)
         case "d": {
-            for (let fox of animalTileIDs) {
+            function calcPairScoring(pair) {
+                // first merge the two pairs neighbours
+                let neighbour1 = neighbourTileIDs(g[0]);
+                let neighbour2 = neighbourTileIDs(g[1]);
+                let merged = new Set(neighbour1.concat(neighbour2));
+                // then count the pairs
+                let animalCount = {};
+                let count = 0;
+                for (let tile of merged) {
+                    // if a animal is placed there
+                    if (allPlacedTokens.hasOwnProperty(tile)) {
+                        let type = allPlacedTokens[tile];
+                        if (type == "fox")
+                            continue;
+                        // add to the count
+                        if (animalCount[type]) {
+                            animalCount[type]++;
+                            // if we reached 2 we have a pair, so up the pair count
+                            if (animalCount[type] == 2)
+                                count++;
+                        } else {
+                            animalCount[type] = 1;
+                        }
+                    }
+                }
+                // calculate the score based on the amount of pairs
+                let scoring = {
+                    1: 5,
+                    2: 7,
+                    3: 9,
+                    4: 11,
+                }
+                if (scoring[count])
+                    return scoring[count];
+                return 0;
+            }
+            let groups = getAnimalGroups("fox");
+            for (let g of groups) {
+                // if its a pair, do the normal calc
+                if (g.length == 2) {
+                        score += calcPairScoring(g)
+                } else {
+                    // solo foxes dont count
+                    if (g.length == 1)
+                        continue;
+                    // otherwise: TODO: get each combination of adjacent fox pairs, calc the score
+                    //first get all comination of pairs, then get each combination of those pairs?
+                }
             }
             break;
         }
@@ -4259,6 +4306,7 @@ function calculateFoxTokenScoring() {
                 };
                 // for each adjacent animal type, add according to the table
                 for (let count of Object.values(animalCount)) {
+                    // only add if the count is in the table (higher/lower ones dont give points)
                     if (scoring[count]) {
                         score += scoring[count];
                     }
