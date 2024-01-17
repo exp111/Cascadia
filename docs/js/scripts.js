@@ -4225,6 +4225,47 @@ function calculateFoxTokenScoring() {
             }
             break;
         }
+        // D: TODO
+        case "d": {
+            for (let fox of animalTileIDs) {
+            }
+            break;
+        }
+        // Star: 1,2,2 points per 1,2,3 size adjacent animals (no foxes)
+        case "star": {
+            for (let fox of animalTileIDs) {
+                // get all neighbour tiles
+                let neighbours = neighbourTileIDs(fox);
+                let animalCount = {};
+                for (let tile of neighbours) {
+                    // if a animal is placed there
+                    if (allPlacedTokens.hasOwnProperty(tile)) {
+                        let type = allPlacedTokens[tile];
+                        if (type == "fox")
+                            continue;
+                        // add to the count
+                        if (animalCount[type]) {
+                            animalCount[type]++;
+                        } else {
+                            animalCount[type] = 1;
+                        }
+                    }
+                }
+                // add to score based on scoring table
+                let scoring = {
+                    1: 1,
+                    2: 2,
+                    3: 2
+                };
+                // for each adjacent animal type, add according to the table
+                for (let count of Object.values(animalCount)) {
+                    if (scoring[count]) {
+                        score += scoring[count];
+                    }
+                }
+            }
+            break;
+        }
         default:
             console.error(`Unknown Set ${currentSets["fox"]}`);
             return;
