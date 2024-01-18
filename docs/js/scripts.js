@@ -4429,31 +4429,8 @@ function calculateHawkTokenScoring() {
             console.error(`Unknown Set ${currentSets["fox"]}`);
             return;
     }
-
-    for (const tokenID of tokenIDs) {
-
-        if (allPlacedTokens[tokenID] == 'hawk') {
-
-            let neighbourTiles = neighbourTileIDs(tokenID);
-
-            let neighbouringHawks = false;
-
-            for (let i = 0; i < neighbourTiles.length; i++) {
-                if (allPlacedTokens.hasOwnProperty(neighbourTiles[i])) {
-                    if (allPlacedTokens[neighbourTiles[i]] == 'hawk') {
-                        neighbouringHawks = true;
-                    }
-                }
-            }
-            if (!neighbouringHawks) {
-                numIsolatedHawks++;
-            }
-
-        }
-    }
-
+    
     tokenScoring.hawk.totalScore = score;
-
 }
 
 let usedSalmonTokenIDs = [];
