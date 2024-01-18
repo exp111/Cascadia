@@ -4227,6 +4227,7 @@ function calculateFoxTokenScoring() {
         }
         // D: give points for the amount of animal pair next to each fox pair (pairs dont need to be adjacent, no foxes, each fox only counts for one pair)
         case "d": {
+            // calculates the score of a pair
             function calcPairScoring(pair) {
                 // first merge the two pairs neighbours
                 let neighbour1 = neighbourTileIDs(g[0]);
@@ -4263,6 +4264,55 @@ function calculateFoxTokenScoring() {
                     return scoring[count];
                 return 0;
             }
+            // checks if a pair of tile ids is adjacent
+            function isValidPair(pair) {
+                let first = pair[0];
+                let second = pair[1];
+                let firstTile = first.split('-');
+                let secondTile = second.split('-');
+
+                let thisRow = parseInt(firstTile[1]);
+                let thisColumn = parseInt(firstTile[3]);
+                let otherRow = parseInt(secondTile[1]);
+                let otherCol = parseInt(secondTile[3]);
+
+                let rowColMapSet = thisRow % 2;
+                if (rowColMapSet != 0) rowColMapSet = 1;
+
+                for (let i = 0; i < linkedTileSides.length; i++) {
+                    let newRow = thisRow + linkedTileSides[i].rowColMapping[rowColMapSet].rowDif;
+                    let newColumn = thisColumn + linkedTileSides[i].rowColMapping[rowColMapSet].colDif;
+                    if (newRow == otherRow && newColumn == otherCol)
+                        return true;
+                }
+                return false;
+            }
+            // generates all possible pair sets from a list of tiles
+            function* allPairs(lst) {
+                if (lst.length < 2) {
+                    yield [];
+                    return;
+                }
+
+                if (lst.length % 2 === 1) {
+                    // Handle odd length list
+                    for (let i = 0; i < lst.length; i++) {
+                        for (const result of allPairs(lst.slice(0, i).concat(lst.slice(i + 1)))) {
+                            yield result;
+                        }
+                    }
+                } else {
+                    const a = lst[0];
+                    for (let i = 1; i < lst.length; i++) {
+                        const pair = [a, lst[i]];
+                        if (!isValidPair(pair))
+                            continue;
+                        for (const rest of allPairs(lst.slice(1, i).concat(lst.slice(i + 1)))) {
+                            yield [pair].concat(rest);
+                        }
+                    }
+                }
+            }
             let groups = getAnimalGroups("fox");
             for (let g of groups) {
                 // if its a pair, do the normal calc
@@ -4272,8 +4322,20 @@ function calculateFoxTokenScoring() {
                     // solo foxes dont count
                     if (g.length == 1)
                         continue;
-                    // otherwise: TODO: get each combination of adjacent fox pairs, calc the score
-                    //first get all comination of pairs, then get each combination of those pairs?
+                    // otherwise:
+                    // get all possible pair sets
+                    let sets = allPairs(g);
+                    // then calc the total score for each set and take the highest
+                    let highest = 0;
+                    for (let pairs of sets) {
+                        let total = 0;
+                        for (let pair of pairs) {
+                            total += calcPairScoring(pair);
+                        }
+                        if (total > highest)
+                            highest = total;
+                    }
+                    score += highest;
                 }
             }
             break;
