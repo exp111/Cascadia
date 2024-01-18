@@ -4124,6 +4124,28 @@ function getOppositeDirection(thisDirection) {
     return obj.oppositeDirection;
 }
 
+// checks if a pair of tile ids is adjacent
+function areTilesAdjacent(first, second) {
+    let firstTile = first.split('-');
+    let secondTile = second.split('-');
+
+    let thisRow = parseInt(firstTile[1]);
+    let thisColumn = parseInt(firstTile[3]);
+    let otherRow = parseInt(secondTile[1]);
+    let otherCol = parseInt(secondTile[3]);
+
+    let rowColMapSet = thisRow % 2;
+    if (rowColMapSet != 0) rowColMapSet = 1;
+
+    for (let i = 0; i < linkedTileSides.length; i++) {
+        let newRow = thisRow + linkedTileSides[i].rowColMapping[rowColMapSet].rowDif;
+        let newColumn = thisColumn + linkedTileSides[i].rowColMapping[rowColMapSet].colDif;
+        if (newRow == otherRow && newColumn == otherCol)
+            return true;
+    }
+    return false;
+}
+
 function clamp(number, min, max) {
     return Math.max(min, Math.min(number, max));
 }
@@ -4265,30 +4287,6 @@ function calculateFoxTokenScoring() {
                 return 0;
             }
 
-            // checks if a pair of tile ids is adjacent
-            function isValidPair(pair) {
-                let first = pair[0];
-                let second = pair[1];
-                let firstTile = first.split('-');
-                let secondTile = second.split('-');
-
-                let thisRow = parseInt(firstTile[1]);
-                let thisColumn = parseInt(firstTile[3]);
-                let otherRow = parseInt(secondTile[1]);
-                let otherCol = parseInt(secondTile[3]);
-
-                let rowColMapSet = thisRow % 2;
-                if (rowColMapSet != 0) rowColMapSet = 1;
-
-                for (let i = 0; i < linkedTileSides.length; i++) {
-                    let newRow = thisRow + linkedTileSides[i].rowColMapping[rowColMapSet].rowDif;
-                    let newColumn = thisColumn + linkedTileSides[i].rowColMapping[rowColMapSet].colDif;
-                    if (newRow == otherRow && newColumn == otherCol)
-                        return true;
-                }
-                return false;
-            }
-
             // generates all possible pair sets from a list of tiles
             function* allPairs(lst) {
                 if (lst.length < 2) {
@@ -4307,7 +4305,7 @@ function calculateFoxTokenScoring() {
                     const a = lst[0];
                     for (let i = 1; i < lst.length; i++) {
                         const pair = [a, lst[i]];
-                        if (!isValidPair(pair))
+                        if (!areTilesAdjacent(pair[0], pair[1]))
                             continue;
                         for (const rest of allPairs(lst.slice(1, i).concat(lst.slice(i + 1)))) {
                             yield [pair].concat(rest);
@@ -4488,6 +4486,26 @@ function calculateHawkTokenScoring() {
             }
             if (scoring[count])
                 score += scoring[count];
+            break;
+        }
+        // C: 3 points for each line between non adjacent hawks
+        case "c": {
+            let count = 0;
+            let done = {};
+            for (let tile of animalTileIDs) {
+                let visible = getVisibleHawks(tile);
+                for (let other of visible) {
+                    // if its done weve already had the line between this and the other
+                    if (done[other])
+                        continue;
+                    if (areTilesAdjacent(tile, other))
+                        continue;
+                    count++;
+                }
+                // mark as done
+                done[tile] = true;
+            }
+            score += count * 3;
             break;
         }
         // Star: points based on empty spaces (no tile, no token) next to hawks
