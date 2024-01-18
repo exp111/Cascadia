@@ -4384,21 +4384,51 @@ function calculateFoxTokenScoring() {
 }
 
 function calculateHawkTokenScoring() {
-    let hawkScoringValues = {
-        '0': 0,
-        '1': 2,
-        '2': 5,
-        '3': 8,
-        '4': 11,
-        '5': 14,
-        '6': 18,
-        '7': 22,
-        '8': 26
+    const tokenIDs = Object.keys(allPlacedTokens);
+    let animalTileIDs = [];
+    // get all foxes
+    for (const tokenID of tokenIDs) {
+        if (allPlacedTokens[tokenID] == "hawk") {
+            animalTileIDs.push(tokenID);
+        }
     }
 
-    const tokenIDs = Object.keys(allPlacedTokens);
-
-    let numIsolatedHawks = 0;
+    // calculate the score
+    let score = 0;
+    switch (currentSets["hawk"]) {
+        //A: give point for each hawk that does is not adjacent to another hawk
+        case "a": {
+            let count = 0;
+            outer:
+            for (let tile of animalTileIDs) {
+                let neighbourTiles = neighbourTileIDs(tokenID);
+                for (let neigh of neighbourTiles) {
+                    // if its a hawk, this one doesnt count. continue
+                    if (allPlacedTokens.hasOwnProperty(neigh) && allPlacedTokens[neigh] == "hawk") {
+                        continue outer;
+                    }
+                }
+                count++;
+            }
+            let scoring = {
+                0: 0,
+                1: 2,
+                2: 5,
+                3: 8,
+                4: 11,
+                5: 14,
+                6: 18,
+                7: 22,
+                8: 26
+            }
+            if (scoring[count])
+                score += scoring[count];
+            break;
+        }
+        default:
+            console.error(`Unknown Set ${currentSets["fox"]}`);
+            return;
+    }
 
     for (const tokenID of tokenIDs) {
 
@@ -4422,9 +4452,7 @@ function calculateHawkTokenScoring() {
         }
     }
 
-    if (numIsolatedHawks > 8) numIsolatedHawks = 8;
-
-    tokenScoring.hawk.totalScore = hawkScoringValues[numIsolatedHawks];
+    tokenScoring.hawk.totalScore = score;
 
 }
 
