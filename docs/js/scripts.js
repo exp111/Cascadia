@@ -4264,6 +4264,7 @@ function calculateFoxTokenScoring() {
                     return scoring[count];
                 return 0;
             }
+
             // checks if a pair of tile ids is adjacent
             function isValidPair(pair) {
                 let first = pair[0];
@@ -4287,6 +4288,7 @@ function calculateFoxTokenScoring() {
                 }
                 return false;
             }
+
             // generates all possible pair sets from a list of tiles
             function* allPairs(lst) {
                 if (lst.length < 2) {
@@ -4313,11 +4315,12 @@ function calculateFoxTokenScoring() {
                     }
                 }
             }
+
             let groups = getAnimalGroups("fox");
             for (let g of groups) {
                 // if its a pair, do the normal calc
                 if (g.length == 2) {
-                        score += calcPairScoring(g)
+                    score += calcPairScoring(g)
                 } else {
                     // solo foxes dont count
                     if (g.length == 1)
@@ -4393,6 +4396,42 @@ function calculateHawkTokenScoring() {
         }
     }
 
+    // getConnectedHawks(tile): raytrace to each direction and add the first hawk found into a list
+    function getConnectedHawks(tile) {
+        let firstTile = tile.split('-');
+
+        let thisRow = parseInt(firstTile[1]);
+        let thisColumn = parseInt(firstTile[3]);
+
+        let found = [];
+        for (let index in directions) {
+            let curRow = thisRow;
+            let curCol = thisColumn;
+            // raytrace in that direction
+            while (true) {
+                // get the row offset
+                let rowColMapSet = curRow % 2;
+                // go into the direction one step
+                curRow += linkedTileSides[index].rowColMapping[rowColMapSet].rowDif;
+                curRow += linkedTileSides[index].rowColMapping[rowColMapSet].colDif;
+
+                // if we're oob, break
+                if (curRow > mapRowRange || curRow < 0 || curCol > mapColumnRange || curCol < 0)
+                    break;
+                // check the current tile for a hawk
+                let newTileID = 'row-' + newRow + '-column-' + newColumn;
+                if (allPlacedTokens.hasOwnProperty(newTileID)) {
+                    if (allPlacedTokens[newTileID] == "hawk") {
+                        // found one, next direction
+                        found.push(newTileID);
+                        break;
+                    }
+                }
+            }
+        }
+        return found;
+    }
+
     // calculate the score
     let score = 0;
     switch (currentSets["hawk"]) {
@@ -4400,16 +4439,16 @@ function calculateHawkTokenScoring() {
         case "a": {
             let count = 0;
             outer:
-            for (let tile of animalTileIDs) {
-                let neighbourTiles = neighbourTileIDs(tile);
-                for (let neigh of neighbourTiles) {
-                    // if its a hawk, this one doesnt count. continue
-                    if (allPlacedTokens.hasOwnProperty(neigh) && allPlacedTokens[neigh] == "hawk") {
-                        continue outer;
+                for (let tile of animalTileIDs) {
+                    let neighbourTiles = neighbourTileIDs(tile);
+                    for (let neigh of neighbourTiles) {
+                        // if its a hawk, this one doesnt count. continue
+                        if (allPlacedTokens.hasOwnProperty(neigh) && allPlacedTokens[neigh] == "hawk") {
+                            continue outer;
+                        }
                     }
+                    count++;
                 }
-                count++;
-            }
             let scoring = {
                 0: 0,
                 1: 2,
