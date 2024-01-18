@@ -4401,7 +4401,7 @@ function calculateHawkTokenScoring() {
             let count = 0;
             outer:
             for (let tile of animalTileIDs) {
-                let neighbourTiles = neighbourTileIDs(tokenID);
+                let neighbourTiles = neighbourTileIDs(tile);
                 for (let neigh of neighbourTiles) {
                     // if its a hawk, this one doesnt count. continue
                     if (allPlacedTokens.hasOwnProperty(neigh) && allPlacedTokens[neigh] == "hawk") {
@@ -4425,11 +4425,42 @@ function calculateHawkTokenScoring() {
                 score += scoring[count];
             break;
         }
+        // Star: points based on empty spaces (no tile, no token) next to hawks
+        case "star": {
+            let count = 0;
+            for (let tile of animalTileIDs) {
+                let neighbourTiles = neighbourTileIDs(tile);
+                for (let neigh of neighbourTiles) {
+                    // if empty increase count
+                    if (!allPlacedTiles.hasOwnProperty(neigh)) {
+                        count++;
+                    }
+                }
+            }
+            let scoring = {
+                3: 2, //3+
+                6: 4, //6+
+                9: 7, //9+
+                12: 10, //12+
+                16: 14, //16+
+                20: 18, //
+                25: 22,
+                30: 27,
+            }
+            for (let [bracket, val] of Object.entries(scoring)) {
+                if (count >= bracket) {
+                    score = val; // if it falls into the bracket, save it
+                } else {
+                    break; // all others are going to be higher, therefore quit
+                }
+            }
+            break;
+        }
         default:
             console.error(`Unknown Set ${currentSets["fox"]}`);
             return;
     }
-    
+
     tokenScoring.hawk.totalScore = score;
 }
 
