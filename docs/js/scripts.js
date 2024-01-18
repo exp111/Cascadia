@@ -4396,8 +4396,8 @@ function calculateHawkTokenScoring() {
         }
     }
 
-    // getConnectedHawks(tile): raytrace to each direction and add the first hawk found into a list
-    function getConnectedHawks(tile) {
+    // getVisibleHawks(tile): raytrace to each direction and add the first hawk found into a list
+    function getVisibleHawks(tile) {
         let firstTile = tile.split('-');
 
         let thisRow = parseInt(firstTile[1]);
@@ -4459,6 +4459,32 @@ function calculateHawkTokenScoring() {
                 6: 18,
                 7: 22,
                 8: 26
+            }
+            if (scoring[count])
+                score += scoring[count];
+            break;
+        }
+        // B: points for each hawk that is sight of another hawk and not visible
+        case "b": {
+            let count = 0;
+            for (let tile of animalTileIDs) {
+                let adjacent = searchNeighbourTilesForWildlife(tile, "hawk");
+                if (adjacent.length > 0)
+                    continue;
+                let visible = getVisibleHawks(tile);
+                if (visible.length > 0) {
+                    if (count < 8) // after 8 no more increase
+                        count++;
+                }
+            }
+            let scoring = {
+                2: 5,
+                3: 9,
+                4: 12,
+                5: 16,
+                6: 20,
+                7: 24,
+                8: 28,
             }
             if (scoring[count])
                 score += scoring[count];
