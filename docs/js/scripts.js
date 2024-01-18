@@ -4419,7 +4419,7 @@ function calculateHawkTokenScoring() {
                 if (curRow > mapRowRange || curRow < 0 || curCol > mapColumnRange || curCol < 0)
                     break;
                 // check the current tile for a hawk
-                let newTileID = 'row-' + newRow + '-column-' + newColumn;
+                let newTileID = 'row-' + curRow + '-column-' + curColumn;
                 if (allPlacedTokens.hasOwnProperty(newTileID)) {
                     if (allPlacedTokens[newTileID] == "hawk") {
                         // found one, next direction
