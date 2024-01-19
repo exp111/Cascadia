@@ -4146,6 +4146,36 @@ function areTilesAdjacent(first, second) {
     return false;
 }
 
+function getTilesBetween(start, end) {
+    let startTile = start.split('-');
+    let endTile = end.split('-');
+
+    let curRow = parseInt(startTile[1]);
+    let curColumn = parseInt(startTile[3]);
+    let endRow = parseInt(endTile[1]);
+    let endCol = parseInt(endTile[3]);
+
+    let tiles = [];
+    while (curRow != endRow && curColumn != endCol) {
+        let rowColMapSet = curRow % 2;
+        let lowestDiff = Infinity;
+        let lowestTile = null;
+        for (let i = 0; i < linkedTileSides.length; i++) {
+            let nextRow = curRow + linkedTileSides[i].rowColMapping[rowColMapSet].rowDif;
+            let nextCol = curColumn + linkedTileSides[i].rowColMapping[rowColMapSet].colDif;
+            let diff = Math.abs(endRow - nextRow) + Math.abs(endCol - nextCol);
+            if (diff < lowestDiff) {
+                lowestDiff = diff;
+                lowestTile = [nextRow, nextCol];
+            }
+        }
+        curRow = lowestTile[0];
+        curColumn = lowestTile[1];
+        tiles.push('row-' + curRow + '-column-' + curColumn);
+    }
+    return tiles;
+}
+
 function clamp(number, min, max) {
     return Math.max(min, Math.min(number, max));
 }
@@ -4506,6 +4536,98 @@ function calculateHawkTokenScoring() {
                 done[tile] = true;
             }
             score += count * 3;
+            break;
+        }
+        // D: points based on number of unique animals between pairs. each hawk only counts once
+        case "d": {
+            // calculates the score of a pair
+            function calcPairScoring(pair) {
+                // get the animals between the pair
+                let between = getTilesBetween(pair[0], pair[1]);
+                let unique = {};
+                let count = 0;
+                for (let animal of between) {
+                    if (allPlacedTokens.hasOwnProperty(animal)) {
+                        let val = allPlacedTokens[animal];
+                        if (!unique[val]) {
+                            unique[val] = true;
+                            count++;
+                        }
+                    }
+                }
+                let scoring = {
+                    1: 4,
+                    2: 7,
+                    3: 9,
+                }
+                if (scoring[count])
+                    return scoring[count];
+                return 0;
+            }
+
+            // first generate all visible ones
+            let visible = {};
+            for (let tile of animalTileIDs) {
+                visible[tile] = getVisibleHawks(tile);
+            }
+            // then filter out all hawks that have no visible partner
+            let filtered = animalTileIDs.filter(t => visible[t] && visible[t].length > 0);
+
+            // generates all possible pair sets from a list of tiles
+            function* allPairs(lst) {
+                if (lst.length < 2) {
+                    yield [];
+                    return;
+                }
+
+                if (lst.length % 2 === 1) {
+                    // Handle odd length list
+                    for (let i = 0; i < lst.length; i++) {
+                        for (const result of allPairs(lst.slice(0, i).concat(lst.slice(i + 1)))) {
+                            yield result;
+                        }
+                    }
+                } else {
+                    let a = null;
+                    let index = 0;
+
+                    do {
+                        a = lst[index];
+                        // if the selected hawk does not have a partner anymore, get the next one
+                        if (visible[a].filter(t => lst.includes(t)).length == 0) {
+                            a = null;
+                            // remove it from the list as it cant be used
+                            lst = lst.slice(index);
+                            // if the list is now non pairable, we return
+                            if (lst.length < 2) {
+                                yield [];
+                                return;
+                            }
+                        }
+                    } while (a == null);
+                    // now get the next ones
+                    for (let i = 1; i < lst.length; i++) {
+                        const pair = [a, lst[i]];
+                        if (!visible[a].includes(lst[i]))
+                            continue;
+                        for (const rest of allPairs(lst.slice(1, i).concat(lst.slice(i + 1)))) {
+                            yield [pair].concat(rest);
+                        }
+                    }
+                }
+            }
+
+            let sets = allPairs(filtered);
+            let highest = 0;
+            for (let pairs in sets) {
+                let total = 0;
+                for (let pair of pairs) {
+                    total += calcPairScoring(pair);
+                }
+                if (total > highest)
+                    highest = total;
+            }
+            score += highest;
             break;
         }
         // Star: points based on empty spaces (no tile, no token) next to hawks
