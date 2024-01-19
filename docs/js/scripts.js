@@ -320,6 +320,13 @@ function updateMapPosition(moveDirection) {
     }
 }
 
+var enableAnimations = true;
+$(document).on("change", "#disableAnimations", function(ev) {
+    let disable = ev.target.checked;
+    enableAnimations = !disable;
+    $("body").toggleClass("noAnimations", disable);
+});
+
 $(document).on("change", "#overall-setSelect", function (ev) {
     let val = ev.target.value;
     console.debug(`Changing all sets to ${val}`);
@@ -623,7 +630,7 @@ $(document).on(touchEvent, '.mapTileContainer.potentialPlacement', function () {
         setTimeout(function () {
             // now that time has passed to fade out the preview tile element that was cloned into the chosen map hex - we can safely remove the previewed tile info
             $('.tileContainer.mapPreviewTileContainer').remove();
-        }, 300)
+        }, enableAnimations ? 300 : 1)
     }
 
     // because the user has clicked a tile+token pairing AND then clicked a map hex to finalize a tile placement, the "Replace Duplicates" button is forced to deactive (in case it was previously activated), so that clicking it mid placement doesn't screw up the code.
@@ -648,17 +655,18 @@ $(document).on(touchEvent, '.mapTileContainer.potentialPlacement', function () {
     // this was not done previously as even once the user had clicked JUST the displayed tile+tokencombination, they could just as easily click another container to change their mind
     $('.tokenTileContainer:not(.chosenTokenTileContainer)').addClass('inactive');
 
-    temporarilyLockMap(1000);
+    //INFO: cant use 0 cause parentToAnimate will default to "slow" then
+    temporarilyLockMap(enableAnimations ? 1000 : 1);
 
     // move the chosen displayed tile onto the chosen blank map hex
-    $('.tokenTileContainer.chosenTokenTileContainer .tileContainer.lockedIn').parentToAnimate($('#' + targID), 1000);
+    $('.tokenTileContainer.chosenTokenTileContainer .tileContainer.lockedIn').parentToAnimate($('#' + targID), enableAnimations ? 1000 : 1);
 
     setTimeout(function () {
         // adding the showOptions class to the #placedTileOptions element causes it to slideUp for the user to view the options, such as rotating the tile, confirming the placement, or cancelling the placement
         $('#mapContainer #placedTileOptions').addClass('showOptions');
         $('.mobileTilePlacementOptions.inactiveTileOptions').addClass('activeTileOptions').removeClass('inactiveTileOptions');
         rotateTileAllowed = true;
-    }, 300)
+    }, enableAnimations ? 300 : 1)
 
 })
 
@@ -710,16 +718,16 @@ $(document).on(touchEvent, '.mapTileContainer.potentialNatureCubeTilePlacement',
     // this class will be removed once the tile is finalized
     $('.tokenTileContainer.potentialNatureCube.natureCubeTile .tileContainer.chosenNatureCubeTile').addClass('lockedIn')
 
-    temporarilyLockMap(1000);
+    temporarilyLockMap(enableAnimations ? 1000 : 1);
 
     // move the chosen displayed tile onto the chosen blank map hex
-    $('.tokenTileContainer.potentialNatureCube.natureCubeTile .tileContainer.chosenNatureCubeTile.lockedIn').parentToAnimate($('#' + targID), 1000);
+    $('.tokenTileContainer.potentialNatureCube.natureCubeTile .tileContainer.chosenNatureCubeTile.lockedIn').parentToAnimate($('#' + targID), enableAnimations ? 1000 : 1);
 
     setTimeout(function () {
         // adding the showOptions class to the #placedTileOptions element causes it to slideUp for the user to view the options, such as rotating the tile, confirming the placement, or cancelling the placement
         $('#mapContainer #placedTileOptions').addClass('showOptions');
         $('.mobileTilePlacementOptions.inactiveTileOptions').addClass('activeTileOptions').removeClass('inactiveTileOptions');
-    }, 300)
+    }, enableAnimations ? 300 : 1)
 
 })
 
@@ -1528,20 +1536,20 @@ function confirmTilePlacement() {
 
 function cancelTilePlacement(mode) {
 
-    temporarilyLockMap(1000);
+    temporarilyLockMap(enableAnimations ? 1000 : 1);
 
     rotateTileAllowed = false;
 
     if (mode == 'normalTile') {
         // since the tile has already been moved from the display area onto the map - we now need to move the tile back FROM the map hex it's previously been moved to TO the same place in the display area it was taken from
-        $('.mapTileContainer .tileContainer.lockedIn').parentToAnimate($('.tokenTileContainer.chosenTokenTileContainer'), 1000);
+        $('.mapTileContainer .tileContainer.lockedIn').parentToAnimate($('.tokenTileContainer.chosenTokenTileContainer'), enableAnimations ? 1000 : 1);
 
         // we can remove the inactive class from all of the tile+token combination containers, since the user will again need to choose another combination again
         $('.inactive').removeClass('inactive');
 
     } else if (mode == 'natureCubeTile') {
         // since the tile has already been moved from the display area onto the map - we now need to move the tile back FROM the map hex it's previously been moved to TO the same place in the display area it was taken from
-        $('.mapTileContainer .tileContainer.chosenNatureCubeTile.lockedIn').parentToAnimate($('.tokenTileContainer.chosenNatureCubeTileParent'), 1000);
+        $('.mapTileContainer .tileContainer.chosenNatureCubeTile.lockedIn').parentToAnimate($('.tokenTileContainer.chosenNatureCubeTileParent'), enableAnimations ? 1000 : 1);
     }
 
     // the class locked in was previously assigned to the tile that was moved to the map hex - so we can remove this now
@@ -1584,7 +1592,7 @@ function cancelTilePlacement(mode) {
         $('.selectedTileOutline').remove();
         // the opaque yellow hexes are faded out are now removed since enough time has elapsed for it to fade out
         $('.validPlacement').remove();
-    }, 400)
+    }, enableAnimations ? 400 : 1)
 }
 
 function confirmInvalidTokenPlacementFunction() {
@@ -5221,4 +5229,9 @@ function indexOfMax(arr) {
     }
 
     return maxIndex;
+}
+
+
+if (window.location.protocol == "file:" || window.location.hostname == "localhost") {
+    $("#disableAnimations").prop("checked", true).change()
 }

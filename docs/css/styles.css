@@ -5344,3 +5344,13 @@ top: 290px;
 	margin-bottom: 0;
 	margin-right: 0.5em;
 }
+body.noAnimations {
+	/*Options*/
+	#placedTileOptions {
+		transition: none !important;
+	}
+	/*Rotation*/
+	.habitatTile {
+		transition: none !important;
+	}
+}
