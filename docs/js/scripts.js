@@ -4844,6 +4844,29 @@ function neighbourTileIDs(currentID) {
 
 }
 
+function getGroup(tile, animal) {
+    let queue = [tile];
+    let currentGroup = [];
+    let added = {};
+    while (queue.length > 0) {
+        let cur = queue.pop();
+        // already added
+        if (added[cur])
+            continue;
+
+        // add to group
+        currentGroup.push(cur);
+        added[cur] = true;
+
+        // get the neighboring animals and add them to the queue
+        let next = searchNeighbourTilesForWildlife(cur, animal);
+        // if there are animals add them
+        if (next.length > 0) {
+            queue.push(...next);
+        }
+    }
+    return currentGroup;
+}
 function getAnimalGroups(animal) {
     const tokenIDs = Object.keys(allPlacedTokens);
 
@@ -4852,7 +4875,6 @@ function getAnimalGroups(animal) {
     let addedAnimals = {};
 
     for (const tokenID of tokenIDs) {
-
         if (allPlacedTokens[tokenID] == animal) {
             animalTileIDs.push(tokenID);
         }
@@ -4860,38 +4882,18 @@ function getAnimalGroups(animal) {
 
     let queue = [];
     let currentGroup = [];
-    // do it while we havent added all animals
     while (true) {
-        // check if the queue is empty
-        if (queue.length == 0) {
-            // if our group has any elements add it and create a new one
-            if (currentGroup.length > 0) {
-                groups.push(currentGroup);
-                currentGroup = [];
-            }
-            // get the first animal that isnt added
-            let t = animalTileIDs.find(tile => !addedAnimals[tile]);
-            // if we cant find any animal, we have added all into groups
-            if (t == null) {
-                return groups;
-            }
-            queue.push(t);
+        // get the next animal
+        let t = animalTileIDs.find(tile => !addedAnimals[tile]);
+        // if we cant find any animal, we have added all into groups
+        if (t == null) {
+            return groups;
         }
-        let cur = queue.pop();
-        // already added
-        if (addedAnimals[cur])
-            continue;
-
-        // add to group
-        currentGroup.push(cur);
-        addedAnimals[cur] = true;
-
-        // get the neighboring animals and add them to the queue
-        let next = searchNeighbourTilesForWildlife(cur, animal);
-        // if there are animals add them
-        if (next.length > 0) {
-            queue.push(...next);
-        }
+        // get the corresponding group
+        let g = getGroup(t, animal);
+        // add it
+        groups.push(g);
+        addedAnimals.push(...g);
     }
 }
 
