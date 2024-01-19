@@ -4758,6 +4758,30 @@ function calculateSalmonTokenScoring() {
             }
             break;
         }
+        // D: points per salmon and per animal adjacent in run of at least 3
+        case "d": {
+            let runs = getRuns();
+            for (let run of runs) {
+                let salmons = run.length;
+                let animals = 0;
+                // count all animals
+                let added = {};
+                for (let tile of run) {
+                    let neighbours = neighbourTileIDs(tile);
+                    for (let n of neighbours) {
+                        if (added[n]) // animals dont double count
+                            continue;
+                        if (allPlacedTokens.hasOwnProperty(n)) {
+                            animals++;
+                            added[n] = true;
+                        }
+                    }
+                }
+
+                score += salmons + animals;
+            }
+            break;
+        }
         default:
             console.error(`Unknown Set ${currentSets["salmon"]}`);
             return;
@@ -4809,7 +4833,6 @@ function neighbourTileIDs(currentID) {
         let newRow = thisRow + linkedTileSides[i].rowColMapping[rowColMapSet].rowDif;
         let newColumn = thisColumn + linkedTileSides[i].rowColMapping[rowColMapSet].colDif;
         let newTileID = 'row-' + newRow + '-column-' + newColumn;
-
 
         neighbourIDs.push(newTileID);
     }
