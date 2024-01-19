@@ -4741,6 +4741,23 @@ function calculateSalmonTokenScoring() {
             }
             break;
         }
+        // C: scores for each salmon run.
+        case "c": {
+            let runs = getRuns();
+            let scoring = {
+                3: 10,
+                4: 12,
+                5: 15
+            }
+            for (let run of runs) {
+                let length = run.length;
+                if (length > 5)
+                    length = 5;
+                if (scoring[length])
+                    score += scoring[length];
+            }
+            break;
+        }
         default:
             console.error(`Unknown Set ${currentSets["salmon"]}`);
             return;
