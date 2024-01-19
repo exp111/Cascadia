@@ -323,7 +323,12 @@ function updateMapPosition(moveDirection) {
 $(document).on("change", "#overall-setSelect", function (ev) {
     let val = ev.target.value;
     console.debug(`Changing all sets to ${val}`);
-    $("#goalList select").val(val).change();
+    for (let select of $("#goalList select")) {
+        let s = $(select);
+        if (s.children(`option[value="${val}"]`).length > 0) {
+            s.val(val).change();
+        }
+    }
 });
 
 const replaceRegex = /(\w*-)\w*((?:-small)?.jpg)/g;
@@ -350,10 +355,11 @@ $(document).on("change", "#goalList select", function (ev) {
         }
         el.src = el.src.replace(replaceRegex, `$1${value}$2`);
     });
-    //TODO: check saved value in score calc
+    //TODO: elk score calc
     //TODO: add thumbnails
     //TODO: make the coverup layer eat less real estate
     //TODO: fix overall set select on mobile being oob
+    //TODO: fix touch events being onstart
 })
 
 $(document).on(touchEvent, '#showWildlifeGoals', function () {
