@@ -4785,6 +4785,48 @@ function calculateSalmonTokenScoring() {
             }
             break;
         }
+        // Star: points based on animal group size adjacent in run of at least 3
+        case "star": {
+            let runs = getRuns();
+            for (let run of runs) {
+                // only 3+ runs count
+                if (run.length < 3)
+                    continue;
+
+                // count all animals
+                let added = {};
+                for (let tile of run) {
+                    // check adjacent animals of each salmon
+                    let neighbours = neighbourTileIDs(tile);
+                    for (let n of neighbours) {
+                        // if we have checked this one before dont double count
+                        if (added[n])
+                            continue;
+                        // is there a animal here
+                        if (allPlacedTokens.hasOwnProperty(n)) {
+                            // get the corresponding group
+                            let group = getGroup(n, "salmon");
+                            // mark everyone in that group
+                            for (let a of group) {
+                                added[a] = true;
+                            }
+                            // give points based on group size
+                            let scoring = {
+                                1: 1,
+                                3: 3,
+                                3: 5,
+                            };
+                            let length = group.length;
+                            if (length > 3)
+                                length = 3;
+                            if (scoring[length])
+                                score += scoring[length];
+                        }
+                    }
+                }
+            }
+            break;
+        }
         default:
             console.error(`Unknown Set ${currentSets["salmon"]}`);
             return;
