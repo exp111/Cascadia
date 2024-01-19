@@ -4463,7 +4463,7 @@ function calculateHawkTokenScoring() {
                 curCol += linkedTileSides[index].rowColMapping[rowColMapSet].colDif;
 
                 // if we're oob, break
-                if (curRow > mapRowRange || curRow < 0 || curCol > mapColumnRange || curCol < 0)
+                if (curRow > mapLimits.down || curRow < mapLimits.up || curCol > mapLimits.right || curCol < mapLimits.left)
                     break;
                 // check the current tile for a hawk
                 let newTileID = 'row-' + curRow + '-column-' + curCol;
