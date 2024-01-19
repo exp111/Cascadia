@@ -4954,7 +4954,9 @@ function getAnimalGroups(animal) {
         let g = getGroup(t, animal);
         // add it
         groups.push(g);
-        addedAnimals.push(...g);
+        for (let a of g) {
+            addedAnimals[a] = true;
+        }
     }
 }
 
