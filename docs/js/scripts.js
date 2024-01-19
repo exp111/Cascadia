@@ -4762,6 +4762,9 @@ function calculateSalmonTokenScoring() {
         case "d": {
             let runs = getRuns();
             for (let run of runs) {
+                if (run.length < 3)
+                    continue;
+
                 let salmons = run.length;
                 let animals = 0;
                 // count all animals
