@@ -5353,4 +5353,10 @@ body.noAnimations {
 	.habitatTile {
 		transition: none !important;
 	}
+	.tokenTileContainer {
+		transition: none !important;
+	}
+	#tileTokenContainer {
+		transition: none !important;
+	}
 }

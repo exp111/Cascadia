@@ -920,7 +920,7 @@ $(document).on('mouseleave', '.mapTileContainer.placedTile.wildlifeTokenPotentia
 
 $(document).on(touchEvent, '.mapTileContainer.placedTile.wildlifeTokenPotential', function () {
 
-    temporarilyLockMap(1000);
+    temporarilyLockMap(enableAnimations ? 1000 : 1);
 
     // this code runs while the player is currently choosing where to place a token on the board
 
@@ -987,7 +987,7 @@ $(document).on(touchEvent, '.mapTileContainer.placedTile.wildlifeTokenPotential'
         // first of all, move the chosen token from the display area onto the chosen tile
 
         $('.tokenTileContainer.chosenTokenTileContainer .tokenContainer .activeToken').attr('wildlife', currentChosenWildlife);
-        $('.tokenTileContainer.chosenTokenTileContainer .tokenContainer .activeToken').parentToAnimate($('#' + chosenTokenTileID), 1000);
+        $('.tokenTileContainer.chosenTokenTileContainer .tokenContainer .activeToken').parentToAnimate($('#' + chosenTokenTileID), enableAnimations ? 1000 : 1);
 
         if (keystoneTile) {
             // if the keystoneTile variable is true, immediately update the tileTokenResetTime variable to 2500 to give time for the nature cube addition animate to conclude
@@ -1033,7 +1033,7 @@ $(document).on(touchEvent, '.mapTileContainer.placedTile.wildlifeTokenPotential'
                     $('#earnedNatureTokenContainer').remove();
                 }, 2500)
 
-            }, 1050);
+            }, enableAnimations ? 1050 : 51);
 
         }
 
@@ -1047,14 +1047,14 @@ $(document).on(touchEvent, '.mapTileContainer.placedTile.wildlifeTokenPotential'
             // the map hex that was chosen to place the token can now have the wildlife attribute removed from it since we will never need to preview anymore tokens in relation to that map hex again
             $('#' + chosenTokenTileID + ' .tileContainer').removeAttr('wildlife');
 
-        }, tileTokenResetTime);
+        }, enableAnimations ? tileTokenResetTime : 100);
 
     } else if ($('.tokenTileContainer.potentialNatureCube').length) {
         // NATURE CUBE TOKEN PLACEMENT CODE
 
         // this part of the if statement is triggered if a nature cube has been used to choose the current tile and token
         $('.tokenTileContainer.potentialNatureCube.natureCubeToken.chosenNatureCubeTokenParent .tokenContainer.chosenNatureCubeToken .activeToken').attr('wildlife', currentChosenWildlife);
-        $('.tokenTileContainer.potentialNatureCube.natureCubeToken.chosenNatureCubeTokenParent .tokenContainer.chosenNatureCubeToken .activeToken').parentToAnimate($('#' + chosenTokenTileID), 1000);
+        $('.tokenTileContainer.potentialNatureCube.natureCubeToken.chosenNatureCubeTokenParent .tokenContainer.chosenNatureCubeToken .activeToken').parentToAnimate($('#' + chosenTokenTileID), enableAnimations ? 1000 : 1);
 
         if (keystoneTile) {
             // if the keystoneTile variable is true, immediately update the tileTokenResetTime variable to 2500 to give time for the nature cube addition animate to conclude
@@ -1101,7 +1101,7 @@ $(document).on(touchEvent, '.mapTileContainer.placedTile.wildlifeTokenPotential'
                     $('#earnedNatureTokenContainer').remove();
                 }, 2500)
 
-            }, 1050)
+            }, enableAnimations ? 1050 : 51)
 
         }
 
@@ -1128,7 +1128,7 @@ $(document).on(touchEvent, '.mapTileContainer.placedTile.wildlifeTokenPotential'
             $('.chosenNatureCubeTokenParent').removeClass('chosenNatureCubeTokenParent');
             $('.chosenNatureCubeTileParent').removeClass('chosenNatureCubeTileParent');
 
-        }, tileTokenResetTime);
+        }, enableAnimations ? tileTokenResetTime : 100);
 
     }
 
@@ -1866,52 +1866,57 @@ function removeSoloTilesTokens() {
             }
         }
 
-
-        // the HTML code for the yeti hand to remove the chosen tile is stored in the yetiTileRemoval variable
-        var yetiTileRemoval = `
+        if (enableAnimations) {
+            // the HTML code for the yeti hand to remove the chosen tile is stored in the yetiTileRemoval variable
+            var yetiTileRemoval = `
 		<div id="yeti-arm-tile-container" class="yeti-container" removedtilerow="${chosenTile}">
 			<img id="removeTileYetiOpenedHand" src="img/open-yeti-hand-tile-removal.png">
 			<img id="removeTileYetiClosedHand" src="img/closed-yeti-hand-tile-removal.png">
 		</div>`;
 
-        // the HTML code for the yeti hand to remove the chosen token is stored in the yetiTokenRemoval variable
-        var yetiTokenRemoval = `
+            // the HTML code for the yeti hand to remove the chosen token is stored in the yetiTokenRemoval variable
+            var yetiTokenRemoval = `
 		<div id="yeti-arm-token-container" class="yeti-container" removedtokenrow="${chosenToken}">
 			<img id="removeTokenYetiOpenedHand" src="img/open-yeti-hand-token-removal.png">
 			<img id="removeTokenYetiClosedHand" src="img/closed-yeti-hand-token-removal.png">
 		</div>`;
 
-        // add the two yeti hands to the DOM
-        $('#tileTokenContainer').append(yetiTileRemoval);
-        $('#tileTokenContainer').append(yetiTokenRemoval);
+            // add the two yeti hands to the DOM
+            $('#tileTokenContainer').append(yetiTileRemoval);
+            $('#tileTokenContainer').append(yetiTokenRemoval);
 
-        // add the takeTile class to the yeti-hand to remove the chosen tile
-        setTimeout(function () {
-            $('#yeti-arm-tile-container').addClass('takeTile');
-        }, 100)
+            // add the takeTile class to the yeti-hand to remove the chosen tile
+            setTimeout(function () {
+                $('#yeti-arm-tile-container').addClass('takeTile');
+            }, 100)
 
-        setTimeout(function () {
+            setTimeout(function () {
+                $('.tokenTileContainer[tokentilenum="' + chosenTile + '"] .tileContainer').remove();
+                $('#yeti-arm-tile-container').removeClass('takeTile');
+                $('#yeti-arm-tile-container #removeTileYetiOpenedHand').hide();
+                $('#yeti-arm-tile-container #removeTileYetiClosedHand').show();
+            }, 1100)
+
+            setTimeout(function () {
+                $('#yeti-arm-token-container').addClass('takeToken');
+            }, 1000)
+
+            setTimeout(function () {
+                $('.tokenTileContainer[tokentilenum="' + chosenToken + '"] .tokenContainer .token').remove();
+                $('#yeti-arm-token-container').removeClass('takeToken');
+                $('#yeti-arm-token-container #removeTokenYetiOpenedHand').hide();
+                $('#yeti-arm-token-container #removeTokenYetiClosedHand').show();
+            }, 2000)
+
+            setTimeout(function () {
+                $('.yeti-container').remove();
+                pickNewTilesTokens();
+            }, 2800)
+        } else {
             $('.tokenTileContainer[tokentilenum="' + chosenTile + '"] .tileContainer').remove();
-            $('#yeti-arm-tile-container').removeClass('takeTile');
-            $('#yeti-arm-tile-container #removeTileYetiOpenedHand').hide();
-            $('#yeti-arm-tile-container #removeTileYetiClosedHand').show();
-        }, 1100)
-
-        setTimeout(function () {
-            $('#yeti-arm-token-container').addClass('takeToken');
-        }, 1000)
-
-        setTimeout(function () {
             $('.tokenTileContainer[tokentilenum="' + chosenToken + '"] .tokenContainer .token').remove();
-            $('#yeti-arm-token-container').removeClass('takeToken');
-            $('#yeti-arm-token-container #removeTokenYetiOpenedHand').hide();
-            $('#yeti-arm-token-container #removeTokenYetiClosedHand').show();
-        }, 2000)
-
-        setTimeout(function () {
-            $('.yeti-container').remove();
             pickNewTilesTokens();
-        }, 2800)
+        }
     }
 
 }
