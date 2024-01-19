@@ -1979,32 +1979,32 @@ function pickNewTilesTokens() {
 
     // the tiles that are left over are pushed down into the bottom two slots
     $('.tokenTileContainer[tokentilenum="' + leftOverTiles[0] + '"] .tileContainer').addClass('movingElementOpacity');
-    $('.tokenTileContainer[tokentilenum="' + leftOverTiles[0] + '"] .tileContainer').parentToAnimate($('.tokenTileContainer[tokentilenum="3"]'), 1000);
+    $('.tokenTileContainer[tokentilenum="' + leftOverTiles[0] + '"] .tileContainer').parentToAnimate($('.tokenTileContainer[tokentilenum="3"]'), enableAnimations ? 1000 : 1);
     $('.tokenTileContainer[tokentilenum="' + leftOverTiles[1] + '"] .tileContainer').addClass('movingElementOpacity');
-    $('.tokenTileContainer[tokentilenum="' + leftOverTiles[1] + '"] .tileContainer').parentToAnimate($('.tokenTileContainer[tokentilenum="2"]'), 1000);
+    $('.tokenTileContainer[tokentilenum="' + leftOverTiles[1] + '"] .tileContainer').parentToAnimate($('.tokenTileContainer[tokentilenum="2"]'), enableAnimations ? 1000 : 1);
 
     // the new tiles that are generated offscreen are pushed down from offscreen into the top two slots
     $('.tokenTileContainer[tokentilenum="-1"] .tileContainer').addClass('movingElementOpacity');
-    $('.tokenTileContainer[tokentilenum="-1"] .tileContainer').parentToAnimate($('.tokenTileContainer[tokentilenum="1"]'), 1000);
+    $('.tokenTileContainer[tokentilenum="-1"] .tileContainer').parentToAnimate($('.tokenTileContainer[tokentilenum="1"]'), enableAnimations ? 1000 : 1);
     $('.tokenTileContainer[tokentilenum="-2"] .tileContainer').addClass('movingElementOpacity');
-    $('.tokenTileContainer[tokentilenum="-2"] .tileContainer').parentToAnimate($('.tokenTileContainer[tokentilenum="0"]'), 1000);
+    $('.tokenTileContainer[tokentilenum="-2"] .tileContainer').parentToAnimate($('.tokenTileContainer[tokentilenum="0"]'), enableAnimations ? 1000 : 1);
 
     // the new tiles that are generated offscreen are pushed down from offscreen into the top two slots
     // at the same time, the wildlifetoken attribute is updated on the tokenContainer to reflect the new wildlifetoken that has just been moved into it
     $('.tokenTileContainer[tokentilenum="' + leftOverTokens[0] + '"] .tokenContainer .token').addClass('movingElementOpacity');
-    $('.tokenTileContainer[tokentilenum="' + leftOverTokens[0] + '"] .tokenContainer .token').parentToAnimate($('.tokenTileContainer[tokentilenum="3"] .tokenContainer'), 1000);
+    $('.tokenTileContainer[tokentilenum="' + leftOverTokens[0] + '"] .tokenContainer .token').parentToAnimate($('.tokenTileContainer[tokentilenum="3"] .tokenContainer'), enableAnimations ? 1000 : 1);
     $('.tokenTileContainer[tokentilenum="3"] .tokenContainer').attr('wildlifetoken', $('.tokenTileContainer[tokentilenum="' + leftOverTokens[0] + '"] .tokenContainer').attr('wildlifetoken'));
     $('.tokenTileContainer[tokentilenum="' + leftOverTokens[1] + '"] .tokenContainer .token').addClass('movingElementOpacity');
-    $('.tokenTileContainer[tokentilenum="' + leftOverTokens[1] + '"] .tokenContainer .token').parentToAnimate($('.tokenTileContainer[tokentilenum="2"] .tokenContainer'), 1000);
+    $('.tokenTileContainer[tokentilenum="' + leftOverTokens[1] + '"] .tokenContainer .token').parentToAnimate($('.tokenTileContainer[tokentilenum="2"] .tokenContainer'), enableAnimations ? 1000 : 1);
     $('.tokenTileContainer[tokentilenum="2"] .tokenContainer').attr('wildlifetoken', $('.tokenTileContainer[tokentilenum="' + leftOverTokens[1] + '"] .tokenContainer').attr('wildlifetoken'));
 
     // the new tokens that are generated offscreen are pushed down from offscreen into the top two slots
     // at the same time, the wildlifetoken attribute is updated on the tokenContainer to reflect the new wildlifetoken that has just been moved into it
     $('.tokenTileContainer[tokentilenum="-1"] .tokenContainer .token').addClass('movingElementOpacity');
-    $('.tokenTileContainer[tokentilenum="-1"] .tokenContainer .token').parentToAnimate($('.tokenTileContainer[tokentilenum="1"] .tokenContainer'), 1000);
+    $('.tokenTileContainer[tokentilenum="-1"] .tokenContainer .token').parentToAnimate($('.tokenTileContainer[tokentilenum="1"] .tokenContainer'), enableAnimations ? 1000 : 1);
     $('.tokenTileContainer[tokentilenum="1"] .tokenContainer').attr('wildlifetoken', $('.tokenTileContainer[tokentilenum="-1"] .tokenContainer').attr('wildlifetoken'));
     $('.tokenTileContainer[tokentilenum="-2"] .tokenContainer .token').addClass('movingElementOpacity');
-    $('.tokenTileContainer[tokentilenum="-2"] .tokenContainer .token').parentToAnimate($('.tokenTileContainer[tokentilenum="0"] .tokenContainer'), 1000);
+    $('.tokenTileContainer[tokentilenum="-2"] .tokenContainer .token').parentToAnimate($('.tokenTileContainer[tokentilenum="0"] .tokenContainer'), enableAnimations ? 1000 : 1);
     $('.tokenTileContainer[tokentilenum="0"] .tokenContainer').attr('wildlifetoken', $('.tokenTileContainer[tokentilenum="-2"] .tokenContainer').attr('wildlifetoken'));
 
     setTimeout(function () {
@@ -2038,7 +2038,7 @@ function pickNewTilesTokens() {
         // Need to give enough time for the new tokens and tiles to be generated and to slide down
         checkDuplicateTokens();
 
-    }, 1000)
+    }, enableAnimations ? 1000 : 1)
 }
 
 // this function is triggered at the start of the game to choose the amount of tiles to use (once they're all used the game is over)
