@@ -4460,13 +4460,13 @@ function calculateHawkTokenScoring() {
                 let rowColMapSet = curRow % 2;
                 // go into the direction one step
                 curRow += linkedTileSides[index].rowColMapping[rowColMapSet].rowDif;
-                curRow += linkedTileSides[index].rowColMapping[rowColMapSet].colDif;
+                curCol += linkedTileSides[index].rowColMapping[rowColMapSet].colDif;
 
                 // if we're oob, break
                 if (curRow > mapRowRange || curRow < 0 || curCol > mapColumnRange || curCol < 0)
                     break;
                 // check the current tile for a hawk
-                let newTileID = 'row-' + curRow + '-column-' + curColumn;
+                let newTileID = 'row-' + curRow + '-column-' + curCol;
                 if (allPlacedTokens.hasOwnProperty(newTileID)) {
                     if (allPlacedTokens[newTileID] == "hawk") {
                         // found one, next direction
